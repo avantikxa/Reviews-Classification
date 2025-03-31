@@ -2,10 +2,9 @@ import streamlit as st
 import joblib
 import pandas as pd
 
-# Load the trained model
-model = joblib.load('cat_model.pkl')  # Ensure this file is saved in the same directory
 
-# Title and description
+model = joblib.load('cat_model.pkl')  
+
 st.title("Nile eCommerce Review Prediction App")
 st.write("Predict whether a customer will leave a positive review.")
 
@@ -51,21 +50,16 @@ input_data = pd.DataFrame({
     'text_review': [text_review]
 })
 
-# Encode categorical columns
-input_data_encoded = pd.get_dummies(input_data, drop_first=True)
 
-# Ensure columns are in the same order as the training dataset
+input_data_encoded = pd.get_dummies(input_data, drop_first=True)
 train_columns = model.feature_names_
 
-# Add any missing columns to the input_data_encoded
 missing_cols = set(train_columns) - set(input_data_encoded.columns)
 for col in missing_cols:
     input_data_encoded[col] = 0
 
-# Reorder the columns to match the model's expected order
 input_data_encoded = input_data_encoded[train_columns]
 
-# Now you can make predictions with the model
 if st.button("Predict Review"):
     prediction = model.predict(input_data_encoded)
     result = "Positive" if prediction[0] == 1 else "Negative"
